@@ -1,4 +1,5 @@
-referral_code: C4ACD869 # Referral code (If you don't have one, pls, use mine)
+referral_code: 3D13C598 # Referral code (If you don't have one, pls, use mine)
 rpc_url: https://eth.llamarpc.com # RPC URL (Ethereum)
-iteration_delay: 6 # hours
-threads: 10
+iteration_delay: 12 # hours
+threads: 1
+owner_address: "0x0738e5c9c576078ebc2e1f21e20114da4e0be92a"

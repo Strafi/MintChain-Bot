@@ -9,3 +9,4 @@ class Config(BaseModel):
     rpc_url: HttpUrl
     iteration_delay: PositiveInt
     threads: PositiveInt
+    owner_address: str

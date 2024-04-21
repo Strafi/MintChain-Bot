@@ -219,7 +219,8 @@ class MintChainAPI(Wallet):
         self.session.headers["authorization"] = f"Bearer {data.access_token}"
 
         if data.user.status == "pending":
-            await self.verify_wallet()
+            if data.user.address != configuration.owner_address:
+                await self.verify_wallet()
 
         if not data.user.twitter:
             await self.connect_twitter()
@@ -228,5 +229,6 @@ class MintChainAPI(Wallet):
             )
 
         if not data.user.inviteId:
-            await self.bind_invite_code()
-            logger.debug(f"Account: {self.account.auth_token} | Referral code bound")
+            if data.user.address != configuration.owner_address:
+                await self.bind_invite_code()
+                logger.debug(f"Account: {self.account.auth_token} | Referral code bound")

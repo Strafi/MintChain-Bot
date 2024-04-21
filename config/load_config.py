@@ -61,6 +61,10 @@ def load_config() -> Config:
     if not settings.get("threads"):
         logger.error(f"Threads is not provided in settings.yaml")
         exit(1)
+        
+    if not settings.get("owner_address"):
+        logger.error(f"Owner address is not provided in settings.yaml")
+        exit(1)
 
     return Config(
         accounts=list(get_accounts()),
@@ -68,4 +72,5 @@ def load_config() -> Config:
         rpc_url=settings["rpc_url"],
         iteration_delay=settings["iteration_delay"],
         threads=settings["threads"],
+        owner_address=settings["owner_address"],
     )
