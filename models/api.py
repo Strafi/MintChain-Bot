@@ -45,7 +45,7 @@ class UserInfo(BaseModel):
     ens: Any
     energy: int
     tree: int
-    inviteId: int
+    inviteId: None | int
     type: str = "normal"
     stake_id: int
     nft_id: int

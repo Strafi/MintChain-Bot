@@ -43,17 +43,11 @@ class Bot(MintChainAPI):
         )
 
     async def process_claim_daily_reward(self) -> bool:
-        return (
-            await self.safe_operation(
-                operation=self.claim_daily_reward,
-                success_message="Daily reward claimed",
-                error_message="Failed to claim daily reward",
-                retries=3,
-            )
-            if not await self.is_daily_reward_claimed()
-            else logger.success(
-                f"Account: {self.account.auth_token} | Daily reward already claimed"
-            )
+        return await self.safe_operation(
+            operation=self.claim_daily_reward,
+            success_message="Daily reward claimed",
+            error_message="Failed to claim daily reward",
+            retries=3,
         )
 
     async def process_inject(self) -> bool:

@@ -1,4 +1,5 @@
 import pyuseragents
+import asyncio
 
 from typing import Literal, List
 from noble_tls import Session, Client
@@ -102,17 +103,46 @@ class MintChainAPI(Wallet):
         return response["result"][0]["freeze"]
 
     async def claim_daily_reward(self) -> int:
-        json_data = {
-            "uid": [],
-            "amount": 500,
-            "includes": [],
-            "type": "daily",
-            "freeze": False,
-            "id": "500_",
-        }
+        energy_response = await self.send_request(
+            request_type="GET", method="/tree/energy-list"
+        )
+        
+        for data in energy_response["result"]:
+            json_data = {
+                "uid": data["uid"],
+                "amount": data["amount"],
+                "includes": data["includes"],
+                "type": data["type"],
+            }
 
-        response = await self.send_request(method="/tree/claim", json_data=json_data)
-        return response["result"]
+            if data['includes']:
+                json_data["id"] = f"{data['amount']}_{data['includes'][0]}"
+            else:
+                json_data["id"] = f"{data['amount']}_"
+
+            if data.get("freeze") == True:
+                logger.info(
+                    f"Account: {self.account.auth_token} | Basic daily already claimed"
+                )
+                continue
+            if data.get("freeze") == False:
+                json_data["freeze"] = False
+
+            response = await self.send_request(method="/tree/claim", json_data=json_data)
+            
+            if response["result"]:
+                logger.success(
+                    f"Account: {self.account.auth_token} | claimed {data['amount']} energy"
+                )
+            else:
+                logger.error(
+                    f"Account: {self.account.auth_token} | Failed to claim energy"
+                )
+                return response["result"]
+
+            await asyncio.sleep(3)
+
+        return energy_response["result"]
 
     async def bind_invite_code(self) -> ResponseData:
         jwt_token = self.jwt_token
@@ -189,6 +219,9 @@ class MintChainAPI(Wallet):
     async def inject(self, amount: int = None) -> InjectData:
         if not amount:
             amount = await self.energy_balance
+
+        if not amount:
+            return InjectData(code=10000, result=False, msg="Not enough energy")
 
         json_data = {
             "address": self.keypair.address,
